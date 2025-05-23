@@ -14,9 +14,10 @@ class Expression:
     
     Value: int | float | str | None
     Operator: str | None
-    Operands: List['Expression'] | None
+    Left: 'Expression | None'
+    Right: 'Expression | None'
 
-    def __init__(self, data, operands: List['Expression'] | None = None):
+    def __init__(self, data, left: 'Expression | None' = None, right: 'Expression | None' = None):
         """Initialize the expression with a value."""
         
         if isinstance(data, (int, float)):
@@ -27,10 +28,11 @@ class Expression:
             if data in ['+', '-', '*', '/']:
                 self.Type = ExpressionType.OPERATOR
                 self.Operator = data
-                self.Operands = operands
-                if operands is None:
-                    raise ValueError("Operands must be provided for an operator.")
-                
+                self.Left = left
+                self.Right = right
+                if left is None or right is None:
+                    raise ValueError("Left and right operands must be provided for an operator.")
+
             else:
                 self.Type = ExpressionType.VARIABLE
                 self.Value = data          
@@ -47,9 +49,9 @@ class Expression:
             return str(self.Value)
         
         elif self.Type == ExpressionType.OPERATOR:
-            if self.Operands is None:
-                raise ValueError("Operands must be provided for an operator.")
-            return f"({self.Operands[0]} {self.Operator} {self.Operands[1]})"
-        
+            if self.Left is None or self.Right is None:
+                raise ValueError("Left and right operands must be provided for an operator.")
+            return f"({self.Left} {self.Operator} {self.Right})"
+
         else:
             raise ValueError("Invalid expression type.")
